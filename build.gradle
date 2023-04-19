@@ -10,13 +10,14 @@ repositories {
 
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-hibernate-orm-rest-data-panache'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
-    implementation 'io.quarkus:quarkus-jdbc-postgresql'
     implementation 'io.quarkus:quarkus-arc'
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation 'io.rest-assured:rest-assured'
+    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache:2.16.4.Final'
+    implementation 'io.quarkus:quarkus-jdbc-h2:2.16.4.Final'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'io.quarkus:quarkus-jdbc-postgresql:2.16.4.Final'
 }
 
 group 'siem'

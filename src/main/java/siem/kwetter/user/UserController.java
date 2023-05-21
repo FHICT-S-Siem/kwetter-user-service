@@ -13,6 +13,7 @@ import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Path("/api/v1/userstate")
@@ -50,12 +51,16 @@ public class UserController {
     @Path("/{id}")
     public Response replace(@PathParam("id") long id, User user) {
         try {
-            return Response.ok(userService.replace(id, user)).build();
-        } catch (Exception e) {
-            if (e instanceof InvalidParameterException) {
-                return Response.status(Status.NOT_FOUND).entity(Map.of("userState", e.getMessage())).build();
+            Optional<User> foundUser = User.findByIdOptional(id);
+            if (foundUser.isPresent()) {
+                User r = foundUser.get();
+                r.setUserState(user.userState);
+                User updatedUser = userService.update(r);
+                return Response.ok(updatedUser).build();
             }
+            return Response.status(Status.NOT_FOUND).build();
 
+        } catch (Exception e) {
             return Response.status(Status.BAD_REQUEST).build();
         }
     }

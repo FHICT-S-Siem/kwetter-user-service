@@ -18,6 +18,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-jdbc-h2:2.16.4.Final'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'io.quarkus:quarkus-jdbc-postgresql:2.16.4.Final'
+    implementation 'io.quarkus:quarkus-smallrye-openapi:2.16.4.Final'
 }
 
 group 'siem'

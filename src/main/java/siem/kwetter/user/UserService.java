@@ -43,8 +43,7 @@ public class UserService {
     }
 
     @Transactional
-    public User replace(long id, User user) {
-        user.setId(id);
+    public User update(User user) {
         return userRepository.update(user).orElseThrow(() -> new InvalidParameterException("Profile not found"));
     }
 

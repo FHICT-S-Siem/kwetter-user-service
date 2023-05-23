@@ -19,7 +19,7 @@ public class UserService {
     @Inject
     UserRepository userRepository;
 
-    public List<User> getKweets(String userState) {
+    public List<User> getUsers(String userState) {
         if(StringUtils.isNotBlank(userState)) {
             return userRepository.findByMessage(userState);
         }

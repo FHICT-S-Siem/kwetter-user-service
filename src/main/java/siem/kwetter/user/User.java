@@ -18,9 +18,9 @@ public class User extends PanacheEntity {
         return id;
     }
 
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUserState() {
         return userState;

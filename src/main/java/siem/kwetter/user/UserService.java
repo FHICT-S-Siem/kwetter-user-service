@@ -48,11 +48,7 @@ public class UserService {
 
     @Transactional
     public Boolean create(User user) {
-        Log.info("In UserService voor persist");
         userRepository.persist(user);
-//        user.persist();
-        Log.info("In UserService na persist");
-
         return user.isPersistent();
     }
 

@@ -13,8 +13,6 @@ import javax.ws.rs.core.MediaType;
 @ApplicationScoped
 public class UserReceiver {
     @Inject UserService userService;
-
-//    List<User> users = new CopyOnWriteArrayList<>();
     @Incoming("user-channel")
     @Consumes(MediaType.APPLICATION_JSON)
     @Blocking
@@ -24,6 +22,8 @@ public class UserReceiver {
 
         // JsonObject to User
         User user = u.mapTo(User.class);
+
+        // entity detached workaround >:(
         User user2 = new User();
         user2.userState = user.userState;
         user2.name = user.name;
@@ -32,8 +32,7 @@ public class UserReceiver {
         user2.nickname = user.nickname;
         user2.sub = user.sub;
         user2.updated_at = user.updated_at;
-
-//        users.add(user);
+        user2.role = user.role;
 
         // post
         userService.create(user2);

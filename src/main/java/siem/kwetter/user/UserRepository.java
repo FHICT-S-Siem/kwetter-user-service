@@ -15,6 +15,7 @@ public class UserRepository implements PanacheRepository<User> {
 
         PanacheRepository.super.persist(user);
     }
+
     @Override
     public User findById(Long id) {
         return PanacheRepository.super.findById(id);

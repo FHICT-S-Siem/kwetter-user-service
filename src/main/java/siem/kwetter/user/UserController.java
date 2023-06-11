@@ -3,20 +3,17 @@ package siem.kwetter.user;
 import lombok.AllArgsConstructor;
 
 import javax.inject.Inject;
-import javax.naming.directory.InvalidAttributesException;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @AllArgsConstructor
-@Path("/api/v1/userstate")
+@Path("/api/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserController {
@@ -24,8 +21,8 @@ public class UserController {
     UserService userService;
 
     @GET
-    public Response getProfiles() {
-        List<User> users = User.listAll();
+    public Response getUsers() {
+        List<User> users = userService.getUsers();
         return Response.ok(users).build();
     }
 
@@ -38,11 +35,10 @@ public class UserController {
     }
 
     @POST
-    @Transactional
     public Response create(User user) {
-        User.persist(user);
-        if (user.isPersistent()){
-            return Response.created(URI.create("/userstate" + user.id)).build();
+        Boolean isCreated = userService.create(user);
+        if (isCreated){
+            return Response.created(URI.create("/user" + user.id)).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }

@@ -13,14 +13,12 @@ public class User extends PanacheEntity {
 
     @Column(nullable = false)
     public String userState;
-    private String name;
-    private String email;
-    private String picture;
-    private String nickname;
-    private String sub;
-    private String updated_at;
-
-
+    public String name;
+    public String email;
+    public String picture;
+    public String nickname;
+    public String sub;
+    public String updated_at;
 
     public Long getId() {
         return id;

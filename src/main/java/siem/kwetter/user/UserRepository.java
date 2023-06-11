@@ -1,6 +1,7 @@
 package siem.kwetter.user;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.logging.Log;
 import org.apache.commons.text.WordUtils;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,10 +11,10 @@ import java.util.Optional;
 public class UserRepository implements PanacheRepository<User> {
     public void persist(User user) {
         var message = WordUtils.capitalize(user.getUserState());
-
         user.setUserState(message);
-
+        Log.info("In UserRepository voor persist");
         PanacheRepository.super.persist(user);
+        Log.info("In UserRepository na persist");
     }
 
     @Override

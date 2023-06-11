@@ -1,5 +1,6 @@
 package siem.kwetter.user;
 
+import io.quarkus.logging.Log;
 import lombok.AllArgsConstructor;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -47,7 +48,11 @@ public class UserService {
 
     @Transactional
     public Boolean create(User user) {
-        User.persist(user);
+        Log.info("In UserService voor persist");
+        userRepository.persist(user);
+//        user.persist();
+        Log.info("In UserService na persist");
+
         return user.isPersistent();
     }
 

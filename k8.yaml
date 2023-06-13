@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-service
-  namespace: kwetter
   labels:
     app: user-service
     service: user-service
@@ -20,7 +19,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-service
-  namespace: kwetter
 spec:
   replicas: 1
   minReadySeconds: 10
@@ -59,7 +57,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-service-database
-  namespace: kwetter
   labels:
     app: user-service-database
     service: user-service-database
@@ -124,7 +121,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: user-service-database-volume-claim
-  namespace: kwetter
 spec:
   volumeMode: Filesystem
   accessModes:
@@ -138,7 +134,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: user-service-database-volume
-  namespace: kwetter
   labels:
     type: local
 spec:
@@ -155,7 +150,6 @@ spec:
     apiVersion: v1
     kind: PersistentVolumeClaim
     name: user-service-database-volume-claim
-    namespace: kwetter
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -168,7 +162,6 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  namespace: kwetter
   name: user-service-secret
 type: Opaque
 stringData:

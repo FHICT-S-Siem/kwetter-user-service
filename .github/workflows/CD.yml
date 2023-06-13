@@ -12,7 +12,7 @@ env:
   PRODUCT_REPO_NAME: ${{secrets.PRODUCT_REPO_NAME}}
   
 jobs:
-  create-kwetterservice-image:
+  create-user-service-image:
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -25,12 +25,27 @@ jobs:
            java-version: '17'
            distribution: 'adopt'
 
-      - name: Docker login
-        run: |
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+#       - name: Docker login
+#         run: |
+#           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-      - name: Build user service docker image
-        run: docker build -f Dockerfile.jvm -t "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest" .
+#       - name: Build user-service docker image
+#         run: docker build -f Dockerfile.jvm -t "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest" .
 
-      - name: Push user service docker image
-        run: docker push "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest"
+#       - name: Push user-service docker image
+#         run: docker push "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest"
+  deployment:
+#     needs: [create-user-service-image]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: kubectl - Google Cloud GKE cluster.
+        uses: ameydev/gke-kubectl-action@master
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+          ZONE_NAME: europe-west1
+        with:
+          args: apply -f /k8s/secrets/ && apply -f /k8s/user-service/
+          

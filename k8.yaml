@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: kwetter
+  labels:
+    app: user-service
+    service: user-service
+spec:
+  selector:
+    app: user-service-pod
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: kwetter
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: user-service-pod
+      version: latest
+  template:
+    metadata:
+      labels:
+        app: user-service-pod
+        version: latest
+    spec:
+      containers:
+      - name: user-container
+        image: neuralm.net:7676/user-service-jvm:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: user-service-secret
+        resources:
+          limits:
+            memory: 500Mi
+            cpu: 500m
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: mydockercredentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service-database
+  namespace: kwetter
+  labels:
+    app: user-service-database
+    service: user-service-database
+spec:
+  selector:
+    app: user-service-database-pod
+  ports:
+  - protocol: TCP
+    name: tcp-psql
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-database
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kwetter-service-database-pod
+      version: latest
+  template:
+    metadata:
+      labels:
+        app: kwetter-service-database-pod
+        version: latest
+    spec:
+      containers:
+      - name: kwetter-service-database-container
+        image: postgres:13.3
+        imagePullPolicy: "IfNotPresent"
+        resources:
+          limits:
+            memory: 800Mi
+            cpu: 300m
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: kwetter-database-secret
+        volumeMounts:
+        - name: user-service-database-volume
+          mountPath: /var/lib/postgresql/data
+        - name: config
+          mountPath: /var/lib/postgresql/postgresql.conf
+          subPath: postgresql.conf
+          readOnly: true
+        args:
+          - "-c"
+          - "config_file=/var/lib/postgresql/postgresql.conf"
+      volumes:
+      - name: user-service-database-volume
+        persistentVolumeClaim:
+          claimName: user-service-database-volume-claim
+      - name: config
+        configMap:
+          name: kwetter-postgres-configmap
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-service-database-volume-claim
+  namespace: kwetter
+spec:
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce 
+  resources:
+    requests:
+      storage: 4Gi
+  storageClassName: local-storage
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: user-service-database-volume
+  namespace: kwetter
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 4Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /mnt/data/user-service-database/
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: user-service-database-volume-claim
+    namespace: kwetter
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - minikube
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: kwetter
+  name: user-service-secret
+type: Opaque
+stringData:
+  QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://user-service-database:5432/user_db
+  QUARKUS_DATASOURCE_USERNAME: postgres
+  QUARKUS_DATASOURCE_PASSWORD: mysecretpassword
+  QUARKUS_DATASOURCE_DB_KIND: postgresql
+  QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: drop-and-create
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kwetter-database-secret
+type: Opaque
+stringData:
+  POSTGRES_DB: postgresdb
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: mysecretpassword

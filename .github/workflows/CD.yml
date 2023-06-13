@@ -30,7 +30,7 @@ jobs:
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
       - name: Build user service docker image
-        run: docker build -f src/main/docker/Dockerfile.jvm -t "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest" .
+        run: docker build -f src/main/docker/Dockerfile.legacy-jar -t "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest" .
 
       - name: Push user service docker image
         run: docker push "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest"

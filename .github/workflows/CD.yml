@@ -47,5 +47,4 @@ jobs:
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
           ZONE_NAME: europe-west1
         with:
-          args: apply -f /k8s/secrets/ && apply -f /k8s/user-service/
-          
+          args: apply -f /k8s/user-service/user-service-deployment.yaml

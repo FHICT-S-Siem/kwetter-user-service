@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-service-database-volume-claim
+  namespace: kwetter
+spec:
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce 
+  resources:
+    requests:
+      storage: 4Gi
+  storageClassName: local-storage
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: user-service-database-volume
+  namespace: kwetter
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 4Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /mnt/data/user-service-database/
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: user-service-database-volume-claim
+    namespace: kwetter
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - minikube

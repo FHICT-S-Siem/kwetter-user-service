@@ -25,17 +25,17 @@ jobs:
            java-version: '17'
            distribution: 'adopt'
 
-#       - name: Docker login
-#         run: |
-#           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - name: Docker login
+        run: |
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-#       - name: Build user-service docker image
-#         run: docker build -f Dockerfile.jvm -t "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest" .
+      - name: Build user-service docker image
+        run: docker build -f Dockerfile.jvm -t "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest" .
 
-#       - name: Push user-service docker image
-#         run: docker push "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest"
+      - name: Push user-service docker image
+        run: docker push "$DOCKER_USERNAME/$PRODUCT_REPO_NAME:latest"
   deployment:
-#     needs: [create-user-service-image]
+    needs: [create-user-service-image]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
